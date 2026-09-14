@@ -27,16 +27,25 @@ The printed capability bits are native facts, not advertised WebGPU features.
 
 ## Build for TRUEOS
 
-From the sibling TRUEOS-Blueprints repository:
+The named build command is `!cargo bpp wgpu-trueos-hal-probe`.
+In a terminal, run it from the sibling TRUEOS-Blueprints repository:
+
+```sh
+cargo bpp wgpu-trueos-hal-probe
+```
+
+This builds `dist/wgpu-trueos-hal-probe.bp` and publishes the named probe to
+the probe catalog. It does not launch the probe on the rig. The `bpp` alias
+selects the probes catalog, whose `wgpu-trueos-hal-probe` entry points directly
+to this standalone example in the wgpu checkout.
+
+For a local build without publication:
 
 ```sh
 TRUEOS_BLUEPRINT_SKIP_APPS_PUBLISH=1 cargo bpp wgpu-trueos-hal-probe
 ```
 
-Output: `dist/wgpu-trueos-hal-probe.bp`. This builds without publication or launch.
-The probe is registered in `probes.json`. The normal `cargo bpp
-wgpu-trueos-hal-probe` flow also publishes it to the probe catalog; after
-publication, select `probe wgpu-trueos-hal-probe` in Shell2 Apps mode.
+After publication, run `probe wgpu-trueos-hal-probe` in Shell2 Apps mode.
 
 Retain the BEGIN, INFO and PASS/FAIL output from the actual TRUEOS run as
 runtime evidence. A successful build is only compile/link validation.
