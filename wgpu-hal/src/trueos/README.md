@@ -37,6 +37,14 @@ bindings and dispatch need a defined native integration contract before the
 hello-compute example can execute through this backend. Buffer mapping and
 readback must also obey the HAL's synchronization and pointer-lifetime rules.
 
+## Direct native initialization test
+
+`examples/standalone/00_trueos_hal_probe` calls the HAL directly and reports
+PASS after native open/query/close succeeds. It preserves initialization errors
+and does not depend on wgpu-core or adapter acquisition. See its README for
+Blueprint build and runtime evidence instructions. This is the first native
+service test, before implementing any additional HAL resources.
+
 ## Validation
 
 From the wgpu repository:

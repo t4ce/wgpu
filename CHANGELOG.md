@@ -112,6 +112,8 @@ By @sagudev in [#10109](https://github.com/gfx-rs/wgpu/pull/10109).
 
 #### Hal
 
+- Added a standalone TRUEOS HAL probe that reports native initialization success or failure before adapter acquisition.
+
 - Added the experimental `trueos` backend feature and `Backend::TrueOs` identity for this local fork. The HAL probes the native mediated vGPU service but does not yet expose a usable WebGPU adapter.
 
 - Add `BufferBinding::buffer`, a public read accessor for the bound buffer, which was previously inaccessible to out-of-tree `wgpu_hal::Api` implementations. By @danlehmann in [#9820](https://github.com/gfx-rs/wgpu/pull/9820).

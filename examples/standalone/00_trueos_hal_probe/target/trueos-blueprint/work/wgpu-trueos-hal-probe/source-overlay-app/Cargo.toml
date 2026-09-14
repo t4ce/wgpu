@@ -1,0 +1,16 @@
+[package]
+name = "wgpu-trueos-hal-probe"
+version = "0.1.0"
+edition = "2024"
+publish = false
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+wgpu-hal = { path = "/home/t4ce/Repos/wgpu/wgpu-hal", default-features = false, features = ["trueos"] }
+
+# Pinned because Rust build-std pulls libc outside the app dependency graph.
+libc = { version = "=0.2.186", default-features = false }
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("trueos"))'] }
+
+[workspace]
