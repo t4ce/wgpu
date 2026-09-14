@@ -33,6 +33,7 @@ fn main() {
             // since it's meant to be used with ANGLE.
             all(target_vendor = "apple", feature = "angle")
         ) },
+        trueos: { all(native, feature = "trueos") },
         noop: { feature = "noop" },
 
         wgpu_core: {
@@ -41,7 +42,7 @@ fn main() {
                 native,
                 // `wgpu_core` is implied if any backend other than WebGPU is enabled.
                 // (this is redundant except for `gles` and `noop`)
-                webgl, dx12, metal, vulkan, gles, noop
+                webgl, dx12, metal, vulkan, gles, trueos, noop
             )
         },
 

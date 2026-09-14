@@ -130,6 +130,9 @@ impl Instance {
         if cfg!(webgpu) {
             backends = backends.union(Backends::BROWSER_WEBGPU);
         }
+        if cfg!(trueos) {
+            backends = backends.union(Backends::TRUEOS);
+        }
         backends
     }
 
@@ -303,6 +306,23 @@ impl Instance {
     /// [`Queue`s]: Queue
     pub fn poll_all(&self, force_wait: bool) -> bool {
         self.inner.poll_all_devices(force_wait)
+    }
+}
+
+#[cfg(all(test, trueos))]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn trueos_is_enabled_without_an_adapter() {
+        assert!(Instance::enabled_backend_features().contains(Backends::TRUEOS));
+
+        let instance = Instance::new(InstanceDescriptor {
+            backends: Backends::TRUEOS,
+            ..InstanceDescriptor::new_without_display_handle()
+        });
+
+        assert!(pollster::block_on(instance.enumerate_adapters(Backends::TRUEOS)).is_empty());
     }
 }
 

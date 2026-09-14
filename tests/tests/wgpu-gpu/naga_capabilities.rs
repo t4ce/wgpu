@@ -25,6 +25,7 @@ pub fn validate_capabilities(ctx: TestingContext) {
         wgpu::Backend::Gl => naga::back::glsl::supported_capabilities(),
         wgpu::Backend::BrowserWebGpu => naga::back::wgsl::supported_capabilities(),
         wgpu::Backend::Noop => Caps::all(),
+        wgpu::Backend::TrueOs => Caps::empty(),
     };
     let diff = device_caps - max_caps;
     assert_eq!(diff, Caps::empty());

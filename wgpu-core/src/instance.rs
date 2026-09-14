@@ -149,6 +149,8 @@ impl Instance {
         this.try_add_hal(hal::api::Gles, &instance_desc, telemetry);
         #[cfg(feature = "noop")]
         this.try_add_hal(hal::api::Noop, &instance_desc, telemetry);
+        #[cfg(trueos)]
+        this.try_add_hal(hal::api::TrueOs, &instance_desc, telemetry);
 
         Arc::new(this)
     }

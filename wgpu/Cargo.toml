@@ -58,6 +58,9 @@ vulkan = ["wgpu-core?/vulkan"]
 ## Enables the OpenGL/GLES backend on Windows, Linux, Android, and Emscripten.
 gles = ["wgpu-core?/gles"]
 
+## Enables the TRUEOS backend on native platforms.
+trueos = ["wgpu-core?/trueos"]
+
 ## Enables the WebGPU backend on WebAssembly.
 webgpu = [
     "web",
@@ -264,6 +267,7 @@ smallvec.workspace = true
 [dev-dependencies]
 # Used in doc-tests
 bytemuck.workspace = true
+pollster.workspace = true
 
 [build-dependencies]
 cfg_aliases.workspace = true

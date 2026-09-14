@@ -259,6 +259,9 @@ pub mod metal;
 /// A dummy API implementation.
 // TODO(https://github.com/gfx-rs/wgpu/issues/7120): this should have a cfg
 pub mod noop;
+/// Experimental TRUEOS mediated vGPU backend.
+#[cfg(feature = "trueos")]
+pub mod trueos;
 /// Vulkan API internals.
 #[cfg(vulkan)]
 pub mod vulkan;
@@ -272,6 +275,8 @@ pub mod api {
     #[cfg(metal)]
     pub use super::metal::Api as Metal;
     pub use super::noop::Api as Noop;
+    #[cfg(feature = "trueos")]
+    pub use super::trueos::Api as TrueOs;
     #[cfg(vulkan)]
     pub use super::vulkan::Api as Vulkan;
 }

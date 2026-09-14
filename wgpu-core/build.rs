@@ -25,5 +25,6 @@ fn main() {
             any(target_os = "linux", target_os = "freebsd", target_os = "netbsd", target_os = "openbsd")
         ) },
         metal: { all(target_vendor = "apple", feature = "metal") },
+        trueos: { feature = "trueos" },
     }
 }

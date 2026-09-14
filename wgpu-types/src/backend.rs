@@ -66,6 +66,9 @@ pub enum Backend {
 
     /// WebGPU in the browser
     BrowserWebGpu = 5,
+
+    /// TRUEOS graphics API.
+    TrueOs = 6,
 }
 
 impl Backend {
@@ -77,6 +80,7 @@ impl Backend {
         Self::Dx12,
         Self::Gl,
         Self::BrowserWebGpu,
+        Self::TrueOs,
     ];
 
     /// Returns the string name of the backend.
@@ -89,6 +93,7 @@ impl Backend {
             Backend::Dx12 => "dx12",
             Backend::Gl => "gl",
             Backend::BrowserWebGpu => "webgpu",
+            Backend::TrueOs => "trueos",
         }
     }
 }
@@ -134,6 +139,9 @@ bitflags::bitflags! {
         /// Whether WebGPU is targeted is decided upon the creation of the `wgpu::Instance`,
         /// *not* upon adapter creation. See `wgpu::Instance::new`.
         const BROWSER_WEBGPU = 1 << Backend::BrowserWebGpu as u32;
+
+        /// [`Backend::TrueOs`].
+        const TRUEOS = 1 << Backend::TrueOs as u32;
 
         /// All the apis that wgpu offers first tier of support for.
         ///
@@ -196,6 +204,7 @@ impl Backends {
     /// - metal  = "metal" or "mtl"
     /// - gles   = "opengl" or "gles" or "gl"
     /// - webgpu = "webgpu"
+    /// - trueos = "trueos"
     pub fn from_comma_list(string: &str) -> Self {
         let mut backends = Self::empty();
         for backend in string.to_lowercase().split(',') {
@@ -205,6 +214,7 @@ impl Backends {
                 "metal" | "mtl" => Self::METAL,
                 "opengl" | "gles" | "gl" => Self::GL,
                 "webgpu" => Self::BROWSER_WEBGPU,
+                "trueos" => Self::TRUEOS,
                 "noop" => Self::NOOP,
                 b => {
                     log::warn!("unknown backend string '{b}'");
@@ -218,6 +228,27 @@ impl Backends {
         }
 
         backends
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{Backend, Backends};
+
+    #[test]
+    fn trueos_backend_name_and_flag() {
+        assert_eq!(Backend::TrueOs.to_str(), "trueos");
+        assert_eq!(Backends::from(Backend::TrueOs), Backends::TRUEOS);
+        assert!(Backends::all().contains(Backends::TRUEOS));
+    }
+
+    #[test]
+    fn trueos_backend_parses_from_comma_list() {
+        assert_eq!(Backends::from_comma_list("TRUEOS"), Backends::TRUEOS);
+        assert_eq!(
+            Backends::from_comma_list("vulkan, trueos"),
+            Backends::VULKAN | Backends::TRUEOS
+        );
     }
 }
 

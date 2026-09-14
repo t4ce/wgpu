@@ -16,6 +16,7 @@
         not(all(feature = "metal", any(target_vendor = "apple"))),
         not(all(feature = "dx12", windows)),
         not(feature = "gles"),
+        not(feature = "trueos"),
     ),
     allow(unused, clippy::let_and_return)
 )]

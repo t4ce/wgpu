@@ -2762,6 +2762,9 @@ impl Device {
             wgt::Backend::Noop => {
                 return Err(pipeline::CreateShaderModuleError::NotCompiledForBackend)
             }
+            wgt::Backend::TrueOs => {
+                return Err(pipeline::CreateShaderModuleError::NotCompiledForBackend)
+            }
             wgt::Backend::BrowserWebGpu => unreachable!(),
         };
 
