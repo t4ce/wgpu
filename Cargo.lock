@@ -5171,6 +5171,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "wgpu-trueos-hal-adapter"
+version = "0.1.0"
+dependencies = [
+ "wgpu-hal",
+]
+
+[[package]]
 name = "wgpu-trueos-hal-probe"
 version = "0.1.0"
 dependencies = [

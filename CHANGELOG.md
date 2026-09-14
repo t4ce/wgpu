@@ -112,6 +112,8 @@ By @sagudev in [#10109](https://github.com/gfx-rs/wgpu/pull/10109).
 
 #### Hal
 
+- TRUEOS now enumerates one native-probe-backed adapter with no resource capabilities; added a separate HAL adapter diagnostic while device opening remains unsupported.
+
 - Added a standalone TRUEOS HAL probe that reports native initialization success or failure before adapter acquisition.
 
 - Added the experimental `trueos` backend feature and `Backend::TrueOs` identity for this local fork. The HAL probes the native mediated vGPU service but does not yet expose a usable WebGPU adapter.

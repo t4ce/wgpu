@@ -1,11 +1,12 @@
 #![allow(unused_variables)]
 
-use alloc::{string::String, vec::Vec};
+use alloc::{string::String, vec, vec::Vec};
 use core::time::Duration;
 
 use crate::TlasInstance;
 
 mod buffer;
+mod capabilities;
 pub mod integration;
 pub use buffer::Buffer;
 mod command;
@@ -19,6 +20,11 @@ pub struct Context {
     probe: integration::AdapterProbe,
 }
 #[derive(Debug)]
+pub struct Adapter {
+    probe: integration::AdapterProbe,
+}
+
+#[derive(Debug)]
 pub enum Resource {}
 
 #[derive(Debug)]
@@ -31,7 +37,7 @@ impl crate::Api for Api {
 
     type Instance = Context;
     type Surface = Context;
-    type Adapter = Context;
+    type Adapter = Adapter;
     type Device = Context;
 
     type Queue = Context;
@@ -57,7 +63,7 @@ impl crate::Api for Api {
     type ComputePipeline = Resource;
 }
 
-crate::impl_dyn_resource!(Buffer, CommandBuffer, Context, Fence, Resource);
+crate::impl_dyn_resource!(Adapter, Buffer, CommandBuffer, Context, Fence, Resource);
 
 impl crate::DynAccelerationStructure for Resource {}
 impl crate::DynBindGroup for Resource {}
@@ -104,7 +110,18 @@ impl crate::Instance for Context {
         &self,
         _surface_hint: Option<&Context>,
     ) -> Vec<crate::ExposedAdapter<Api>> {
-        Vec::new()
+        vec![crate::ExposedAdapter {
+            adapter: Adapter {
+                probe: self.probe.clone(),
+            },
+            info: wgt::AdapterInfo {
+                name: String::from("TRUEOS vGPU"),
+                driver: String::from("TRUEOS mediated vGPU"),
+                ..wgt::AdapterInfo::new(wgt::DeviceType::Other, wgt::Backend::TrueOs)
+            },
+            features: wgt::Features::empty(),
+            capabilities: capabilities::enumeration_only(),
+        }]
     }
 }
 
@@ -142,7 +159,13 @@ impl crate::Surface for Context {
     unsafe fn discard_texture(&self, _texture: Resource) {}
 }
 
-impl crate::Adapter for Context {
+impl Adapter {
+    pub fn probe_info(&self) -> &integration::AdapterProbe {
+        &self.probe
+    }
+}
+
+impl crate::Adapter for Adapter {
     type A = Api;
 
     unsafe fn open(
@@ -407,21 +430,46 @@ mod tests {
     }
 
     #[test]
-    fn opening_a_probed_adapter_is_explicitly_unsupported() {
+    fn enumeration_preserves_native_facts_without_enabling_resources() {
         let context = Context {
             probe: integration::AdapterProbe {
                 capabilities: u64::MAX,
-                memory_quota: 0,
+                memory_quota: 33_554_432,
                 memory_used: 0,
-                epoch: 0,
+                epoch: 6,
             },
         };
-        assert!(
-            unsafe { <Context as crate::Instance>::enumerate_adapters(&context, None) }.is_empty()
+        let dynamic: &dyn crate::DynInstance = &context;
+        let dynamic_adapters = unsafe { dynamic.enumerate_adapters(None) };
+        assert_eq!(dynamic_adapters.len(), 1);
+        assert_eq!(dynamic_adapters[0].info.backend, wgt::Backend::TrueOs);
+        let mut adapters =
+            unsafe { <Context as crate::Instance>::enumerate_adapters(&context, None) };
+        assert_eq!(adapters.len(), 1);
+        let exposed = adapters.pop().unwrap();
+        assert_eq!(exposed.info.backend, wgt::Backend::TrueOs);
+        assert_eq!(exposed.info.name, "TRUEOS vGPU");
+        assert_eq!(exposed.info.device_type, wgt::DeviceType::Other);
+        assert_eq!(exposed.info.vendor, 0);
+        assert_eq!(exposed.info.device, 0);
+        assert!(exposed.features.is_empty());
+        assert!(exposed.capabilities.downlevel.flags.is_empty());
+        assert_eq!(exposed.capabilities.limits.max_buffer_size, 0);
+        assert_eq!(
+            exposed
+                .capabilities
+                .limits
+                .max_compute_invocations_per_workgroup,
+            0
         );
+        assert!(!exposed.capabilities.downlevel.is_webgpu_compliant());
+        assert_eq!(exposed.adapter.probe_info().capabilities, u64::MAX);
+        assert_eq!(exposed.adapter.probe_info().memory_quota, 33_554_432);
+        assert_eq!(exposed.adapter.probe_info().epoch, 6);
+        assert!(!wgt::Limits::downlevel_defaults().check_limits(&exposed.capabilities.limits));
         let result = unsafe {
-            <Context as crate::Adapter>::open(
-                &context,
+            <Adapter as crate::Adapter>::open(
+                &exposed.adapter,
                 wgt::Features::empty(),
                 &wgt::Limits::default(),
                 &wgt::MemoryHints::Performance,
