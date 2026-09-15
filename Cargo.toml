@@ -338,6 +338,7 @@ ndk-sys = "0.6"
 
 # These overrides allow our examples to explicitly depend on release crates
 [patch.crates-io]
+winit = { git = "https://github.com/t4ce/winit", rev = "e9809ef54b18499bb4f2cac945719ecc2a61061b" }
 wgpu = { path = "./wgpu" }
 
 [profile.release]
