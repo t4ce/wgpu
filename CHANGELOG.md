@@ -42,6 +42,9 @@ Bottom level categories:
 
 ## Unreleased
 
+TRUEOS builds can use the existing `custom` backend without linking the native
+`wgpu-core` and `wgpu-hal` stack. Other native targets keep their existing backends.
+
 ### Major changes
 
 #### `TEXTURE_COMPONENT_SWIZZLE` feature and `swizzle` field in `TextureViewDescriptor`

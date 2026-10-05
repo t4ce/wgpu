@@ -36,12 +36,15 @@ fn main() {
         noop: { feature = "noop" },
 
         wgpu_core: {
-            any(
-                // On native, wgpu_core is currently always enabled, even if there's no backend enabled at all.
-                native,
-                // `wgpu_core` is implied if any backend other than WebGPU is enabled.
-                // (this is redundant except for `gles` and `noop`)
-                webgl, dx12, metal, vulkan, gles, noop
+            all(
+                not(target_os = "trueos"),
+                any(
+                    // Native platforms use wgpu-core; TRUEOS uses custom dispatch.
+                    native,
+                    // `wgpu_core` is implied if any backend other than WebGPU is enabled.
+                    // (this is redundant except for `gles` and `noop`)
+                    webgl, dx12, metal, vulkan, gles, noop
+                )
             )
         },
 
