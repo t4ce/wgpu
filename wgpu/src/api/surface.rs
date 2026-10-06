@@ -519,6 +519,16 @@ pub(crate) enum CreateSurfaceErrorKind {
 }
 static_assertions::assert_impl_all!(CreateSurfaceError: Send, Sync);
 
+#[cfg(custom)]
+impl CreateSurfaceError {
+    /// Creates an error reported by a custom surface backend.
+    pub fn from_message(message: String) -> Self {
+        Self {
+            inner: CreateSurfaceErrorKind::Web(message),
+        }
+    }
+}
+
 impl fmt::Display for CreateSurfaceError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.inner {
